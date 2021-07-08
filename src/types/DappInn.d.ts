@@ -22,20 +22,35 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface DappInnInterface extends ethers.utils.Interface {
   functions: {
+    "addRoomService(string,uint256)": FunctionFragment;
     "balance()": FunctionFragment;
+    "buyRoomService(uint8,uint8)": FunctionFragment;
     "checkIn(uint8,uint8)": FunctionFragment;
     "checkOut(uint8)": FunctionFragment;
+    "defaultRoomPriceInWei()": FunctionFragment;
+    "getRoomTab(uint8)": FunctionFragment;
     "getTimeStamp()": FunctionFragment;
     "numberOfRooms()": FunctionFragment;
+    "numberOfServices()": FunctionFragment;
     "owner()": FunctionFragment;
-    "roomPriceInWei()": FunctionFragment;
+    "roomService(uint8)": FunctionFragment;
     "rooms(uint8)": FunctionFragment;
+    "setDefaultRoomPrice(uint256)": FunctionFragment;
     "setNumberOfRooms(uint8)": FunctionFragment;
-    "setRoomPrice(uint256)": FunctionFragment;
+    "setRoomPrice(uint8,uint256)": FunctionFragment;
+    "updateRoomService(uint8,string,uint256,bool)": FunctionFragment;
     "withdrawAll()": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "addRoomService",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "balance", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "buyRoomService",
+    values: [BigNumberish, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "checkIn",
     values: [BigNumberish, BigNumberish]
@@ -45,6 +60,14 @@ interface DappInnInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "defaultRoomPriceInWei",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoomTab",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getTimeStamp",
     values?: undefined
   ): string;
@@ -52,28 +75,53 @@ interface DappInnInterface extends ethers.utils.Interface {
     functionFragment: "numberOfRooms",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "roomPriceInWei",
+    functionFragment: "numberOfServices",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "roomService",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "rooms", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "setDefaultRoomPrice",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "setNumberOfRooms",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setRoomPrice",
-    values: [BigNumberish]
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateRoomService",
+    values: [BigNumberish, string, BigNumberish, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "withdrawAll",
     values?: undefined
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "addRoomService",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "balance", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "buyRoomService",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "checkIn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "checkOut", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "defaultRoomPriceInWei",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "getRoomTab", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getTimeStamp",
     data: BytesLike
@@ -82,18 +130,30 @@ interface DappInnInterface extends ethers.utils.Interface {
     functionFragment: "numberOfRooms",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "numberOfServices",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "roomPriceInWei",
+    functionFragment: "roomService",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "rooms", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setDefaultRoomPrice",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "setNumberOfRooms",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "setRoomPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateRoomService",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -148,7 +208,19 @@ export class DappInn extends BaseContract {
   interface: DappInnInterface;
 
   functions: {
+    addRoomService(
+      _name: string,
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     balance(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    buyRoomService(
+      _roomNumber: BigNumberish,
+      _serviceNumber: BigNumberish,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     checkIn(
       _roomNumber: BigNumberish,
@@ -161,24 +233,56 @@ export class DappInn extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    defaultRoomPriceInWei(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    getRoomTab(
+      _roomNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        ([string, BigNumber, boolean] & {
+          name: string;
+          price: BigNumber;
+          enabled: boolean;
+        })[]
+      ]
+    >;
+
     getTimeStamp(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     numberOfRooms(overrides?: CallOverrides): Promise<[number]>;
 
+    numberOfServices(overrides?: CallOverrides): Promise<[number]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
-    roomPriceInWei(overrides?: CallOverrides): Promise<[BigNumber]>;
+    roomService(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber, boolean] & {
+        name: string;
+        price: BigNumber;
+        enabled: boolean;
+      }
+    >;
 
     rooms(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [number, string, BigNumber] & {
+      [number, string, BigNumber, BigNumber] & {
         status: number;
         guest: string;
         checkoutDate: BigNumber;
+        price: BigNumber;
       }
     >;
+
+    setDefaultRoomPrice(
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     setNumberOfRooms(
       _numberOfRooms: BigNumberish,
@@ -186,7 +290,16 @@ export class DappInn extends BaseContract {
     ): Promise<ContractTransaction>;
 
     setRoomPrice(
+      _roomNumber: BigNumberish,
       _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    updateRoomService(
+      _serviceNumber: BigNumberish,
+      _name: string,
+      _price: BigNumberish,
+      _enabled: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -195,7 +308,19 @@ export class DappInn extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  addRoomService(
+    _name: string,
+    _price: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   balance(overrides?: CallOverrides): Promise<BigNumber>;
+
+  buyRoomService(
+    _roomNumber: BigNumberish,
+    _serviceNumber: BigNumberish,
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   checkIn(
     _roomNumber: BigNumberish,
@@ -208,24 +333,54 @@ export class DappInn extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  defaultRoomPriceInWei(overrides?: CallOverrides): Promise<BigNumber>;
+
+  getRoomTab(
+    _roomNumber: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    ([string, BigNumber, boolean] & {
+      name: string;
+      price: BigNumber;
+      enabled: boolean;
+    })[]
+  >;
+
   getTimeStamp(overrides?: CallOverrides): Promise<BigNumber>;
 
   numberOfRooms(overrides?: CallOverrides): Promise<number>;
 
+  numberOfServices(overrides?: CallOverrides): Promise<number>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
-  roomPriceInWei(overrides?: CallOverrides): Promise<BigNumber>;
+  roomService(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, BigNumber, boolean] & {
+      name: string;
+      price: BigNumber;
+      enabled: boolean;
+    }
+  >;
 
   rooms(
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [number, string, BigNumber] & {
+    [number, string, BigNumber, BigNumber] & {
       status: number;
       guest: string;
       checkoutDate: BigNumber;
+      price: BigNumber;
     }
   >;
+
+  setDefaultRoomPrice(
+    _price: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   setNumberOfRooms(
     _numberOfRooms: BigNumberish,
@@ -233,7 +388,16 @@ export class DappInn extends BaseContract {
   ): Promise<ContractTransaction>;
 
   setRoomPrice(
+    _roomNumber: BigNumberish,
     _price: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  updateRoomService(
+    _serviceNumber: BigNumberish,
+    _name: string,
+    _price: BigNumberish,
+    _enabled: boolean,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -242,7 +406,19 @@ export class DappInn extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    addRoomService(
+      _name: string,
+      _price: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     balance(overrides?: CallOverrides): Promise<BigNumber>;
+
+    buyRoomService(
+      _roomNumber: BigNumberish,
+      _serviceNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     checkIn(
       _roomNumber: BigNumberish,
@@ -255,24 +431,54 @@ export class DappInn extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    defaultRoomPriceInWei(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getRoomTab(
+      _roomNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      ([string, BigNumber, boolean] & {
+        name: string;
+        price: BigNumber;
+        enabled: boolean;
+      })[]
+    >;
+
     getTimeStamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     numberOfRooms(overrides?: CallOverrides): Promise<number>;
 
+    numberOfServices(overrides?: CallOverrides): Promise<number>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
-    roomPriceInWei(overrides?: CallOverrides): Promise<BigNumber>;
+    roomService(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber, boolean] & {
+        name: string;
+        price: BigNumber;
+        enabled: boolean;
+      }
+    >;
 
     rooms(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [number, string, BigNumber] & {
+      [number, string, BigNumber, BigNumber] & {
         status: number;
         guest: string;
         checkoutDate: BigNumber;
+        price: BigNumber;
       }
     >;
+
+    setDefaultRoomPrice(
+      _price: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setNumberOfRooms(
       _numberOfRooms: BigNumberish,
@@ -280,7 +486,16 @@ export class DappInn extends BaseContract {
     ): Promise<void>;
 
     setRoomPrice(
+      _roomNumber: BigNumberish,
       _price: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateRoomService(
+      _serviceNumber: BigNumberish,
+      _name: string,
+      _price: BigNumberish,
+      _enabled: boolean,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -290,7 +505,19 @@ export class DappInn extends BaseContract {
   filters: {};
 
   estimateGas: {
+    addRoomService(
+      _name: string,
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     balance(overrides?: CallOverrides): Promise<BigNumber>;
+
+    buyRoomService(
+      _roomNumber: BigNumberish,
+      _serviceNumber: BigNumberish,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     checkIn(
       _roomNumber: BigNumberish,
@@ -303,15 +530,32 @@ export class DappInn extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    defaultRoomPriceInWei(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getRoomTab(
+      _roomNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getTimeStamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     numberOfRooms(overrides?: CallOverrides): Promise<BigNumber>;
 
+    numberOfServices(overrides?: CallOverrides): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
-    roomPriceInWei(overrides?: CallOverrides): Promise<BigNumber>;
+    roomService(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     rooms(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+    setDefaultRoomPrice(
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     setNumberOfRooms(
       _numberOfRooms: BigNumberish,
@@ -319,7 +563,16 @@ export class DappInn extends BaseContract {
     ): Promise<BigNumber>;
 
     setRoomPrice(
+      _roomNumber: BigNumberish,
       _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    updateRoomService(
+      _serviceNumber: BigNumberish,
+      _name: string,
+      _price: BigNumberish,
+      _enabled: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -329,7 +582,19 @@ export class DappInn extends BaseContract {
   };
 
   populateTransaction: {
+    addRoomService(
+      _name: string,
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     balance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    buyRoomService(
+      _roomNumber: BigNumberish,
+      _serviceNumber: BigNumberish,
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     checkIn(
       _roomNumber: BigNumberish,
@@ -342,17 +607,36 @@ export class DappInn extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    defaultRoomPriceInWei(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoomTab(
+      _roomNumber: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getTimeStamp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     numberOfRooms(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    numberOfServices(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    roomPriceInWei(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    roomService(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     rooms(
       arg0: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    setDefaultRoomPrice(
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     setNumberOfRooms(
@@ -361,7 +645,16 @@ export class DappInn extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     setRoomPrice(
+      _roomNumber: BigNumberish,
       _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    updateRoomService(
+      _serviceNumber: BigNumberish,
+      _name: string,
+      _price: BigNumberish,
+      _enabled: boolean,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

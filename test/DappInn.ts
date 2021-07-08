@@ -21,7 +21,7 @@ describe("DappInn", () => {
         const signers = await ethers.getSigners()
         dappInn = (await deployContract(signers[0], DappInnArtifact)) as DappInn;
 
-        roomValue = await dappInn.roomPriceInWei();
+        roomValue = await dappInn.defaultRoomPriceInWei();
 
     })
 
@@ -58,10 +58,38 @@ describe("DappInn", () => {
 
     it("should let change the price", async () => {
 
-        await dappInn.setRoomPrice(2);
+        const _period = 22;
+        let _newPrice = 200;
+        const _roomNumber = 5;
 
-        await expect(dappInn.checkIn(5, 22, { 
-            value: ethers.BigNumber.from(2).mul(22) 
+        // TEST NEW ROOM PRICE
+        await dappInn.setRoomPrice(_roomNumber,_newPrice);
+
+        await expect(dappInn.checkIn(_roomNumber, _period, { 
+            value: ethers.BigNumber.from(_period).mul(_newPrice) 
+        })).to.eventually.exist.fulfilled;
+
+        // SET A LOWER VALUE TO DEFAULT ROOM PRICE
+        _newPrice = 100;
+
+        await dappInn.setDefaultRoomPrice(_newPrice);
+
+        // EXPECTED OTHER ROOM USE THIS LOWER VALUE
+        await expect(dappInn.checkIn(0, _period, { 
+            value: ethers.BigNumber.from(_period).mul(_newPrice) 
+        })).to.eventually.exist.fulfilled;
+
+        // EXPECTED A ERROR WHEN USING THIS LOWER VALUE ON a NON ZERO PRICE ROOM
+        await expect(dappInn.checkIn(_roomNumber, _period, { 
+            value: ethers.BigNumber.from(_period).mul(_newPrice) 
+        })).to.eventually.exist.rejected;
+
+        // RESET THE ROOM PRICE
+        await dappInn.setRoomPrice(_roomNumber,0);
+
+        // NOW IT SHOULD PASS
+        await expect(dappInn.checkIn(_roomNumber, _period, { 
+            value: ethers.BigNumber.from(_period).mul(_newPrice) 
         })).to.eventually.exist.fulfilled;
 
     })
@@ -83,6 +111,22 @@ describe("DappInn", () => {
         current_balance = await dappInn.balance();
 
         expect(current_balance.toNumber()).to.be.equals(0)
+
+    })
+
+    it("should manage services", async () => {
+
+        await dappInn.checkIn(0,10, { value: roomValue.mul(10)  });
+
+        await dappInn.addRoomService("Beer", 300);
+        await dappInn.addRoomService("Cleaning Service", 500);
+
+        await dappInn.buyRoomService(0,0, { value: 300});
+        await dappInn.buyRoomService(0,1, { value: 500});
+
+        const myTab = await dappInn.getRoomTab(0);
+
+        console.log(myTab);
 
     })
 })
