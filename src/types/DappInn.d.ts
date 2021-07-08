@@ -12,6 +12,7 @@ import {
   BaseContract,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -21,13 +22,20 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface DappInnInterface extends ethers.utils.Interface {
   functions: {
+    "balance()": FunctionFragment;
     "checkIn(uint8,uint8)": FunctionFragment;
     "checkOut(uint8)": FunctionFragment;
     "getTimeStamp()": FunctionFragment;
     "numberOfRooms()": FunctionFragment;
+    "owner()": FunctionFragment;
+    "roomPriceInWei()": FunctionFragment;
     "rooms(uint8)": FunctionFragment;
+    "setNumberOfRooms(uint8)": FunctionFragment;
+    "setRoomPrice(uint256)": FunctionFragment;
+    "withdrawAll()": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "balance", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "checkIn",
     values: [BigNumberish, BigNumberish]
@@ -44,8 +52,26 @@ interface DappInnInterface extends ethers.utils.Interface {
     functionFragment: "numberOfRooms",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "roomPriceInWei",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "rooms", values: [BigNumberish]): string;
+  encodeFunctionData(
+    functionFragment: "setNumberOfRooms",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setRoomPrice",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawAll",
+    values?: undefined
+  ): string;
 
+  decodeFunctionResult(functionFragment: "balance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "checkIn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "checkOut", data: BytesLike): Result;
   decodeFunctionResult(
@@ -56,7 +82,24 @@ interface DappInnInterface extends ethers.utils.Interface {
     functionFragment: "numberOfRooms",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "roomPriceInWei",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "rooms", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setNumberOfRooms",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setRoomPrice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawAll",
+    data: BytesLike
+  ): Result;
 
   events: {};
 }
@@ -105,10 +148,12 @@ export class DappInn extends BaseContract {
   interface: DappInnInterface;
 
   functions: {
+    balance(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     checkIn(
       _roomNumber: BigNumberish,
       _timeToStay: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     checkOut(
@@ -120,6 +165,10 @@ export class DappInn extends BaseContract {
 
     numberOfRooms(overrides?: CallOverrides): Promise<[number]>;
 
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
+    roomPriceInWei(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     rooms(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -130,12 +179,28 @@ export class DappInn extends BaseContract {
         checkoutDate: BigNumber;
       }
     >;
+
+    setNumberOfRooms(
+      _numberOfRooms: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setRoomPrice(
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    withdrawAll(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
+
+  balance(overrides?: CallOverrides): Promise<BigNumber>;
 
   checkIn(
     _roomNumber: BigNumberish,
     _timeToStay: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   checkOut(
@@ -146,6 +211,10 @@ export class DappInn extends BaseContract {
   getTimeStamp(overrides?: CallOverrides): Promise<BigNumber>;
 
   numberOfRooms(overrides?: CallOverrides): Promise<number>;
+
+  owner(overrides?: CallOverrides): Promise<string>;
+
+  roomPriceInWei(overrides?: CallOverrides): Promise<BigNumber>;
 
   rooms(
     arg0: BigNumberish,
@@ -158,7 +227,23 @@ export class DappInn extends BaseContract {
     }
   >;
 
+  setNumberOfRooms(
+    _numberOfRooms: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setRoomPrice(
+    _price: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  withdrawAll(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
+    balance(overrides?: CallOverrides): Promise<BigNumber>;
+
     checkIn(
       _roomNumber: BigNumberish,
       _timeToStay: BigNumberish,
@@ -174,6 +259,10 @@ export class DappInn extends BaseContract {
 
     numberOfRooms(overrides?: CallOverrides): Promise<number>;
 
+    owner(overrides?: CallOverrides): Promise<string>;
+
+    roomPriceInWei(overrides?: CallOverrides): Promise<BigNumber>;
+
     rooms(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -184,15 +273,29 @@ export class DappInn extends BaseContract {
         checkoutDate: BigNumber;
       }
     >;
+
+    setNumberOfRooms(
+      _numberOfRooms: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setRoomPrice(
+      _price: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    withdrawAll(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {};
 
   estimateGas: {
+    balance(overrides?: CallOverrides): Promise<BigNumber>;
+
     checkIn(
       _roomNumber: BigNumberish,
       _timeToStay: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     checkOut(
@@ -204,14 +307,34 @@ export class DappInn extends BaseContract {
 
     numberOfRooms(overrides?: CallOverrides): Promise<BigNumber>;
 
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    roomPriceInWei(overrides?: CallOverrides): Promise<BigNumber>;
+
     rooms(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+
+    setNumberOfRooms(
+      _numberOfRooms: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setRoomPrice(
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    withdrawAll(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    balance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     checkIn(
       _roomNumber: BigNumberish,
       _timeToStay: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     checkOut(
@@ -223,9 +346,27 @@ export class DappInn extends BaseContract {
 
     numberOfRooms(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    roomPriceInWei(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     rooms(
       arg0: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    setNumberOfRooms(
+      _numberOfRooms: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setRoomPrice(
+      _price: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    withdrawAll(
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }
