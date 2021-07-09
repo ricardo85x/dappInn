@@ -178,4 +178,5 @@ contract DappInn {
         require(rooms[_roomNumber].guest == address(msg.sender), "you are not in the room");
         return rooms[_roomNumber].tab;
     }
+
 }
