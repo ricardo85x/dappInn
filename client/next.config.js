@@ -6,7 +6,9 @@ const isDev = process.env.NODE_ENV !== "production";
 
 
 module.exports = withPlugins([
-    withImages,
+    [withImages, {
+      assetPrefix: isDev ? "": "/dappInn/"
+    }],
     withSass,
     {
         trailingSlash: true,
