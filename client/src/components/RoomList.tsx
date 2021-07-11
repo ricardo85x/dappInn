@@ -146,7 +146,7 @@ export const RoomList = () => {
                             </Text>
                         </Flex>
 
-                        <Image width="100%" src={`/static/images/room_${item.id}.jpg`}/>
+                        <Image width="100%" src={`/images/room_${item.id}.jpg`}/>
                         
                     </Flex>
 

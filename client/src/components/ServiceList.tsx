@@ -67,7 +67,7 @@ export const ServiceList = ({ roomNumber }: ServiceListProps) => {
                 {services.map((item, index: number) => (
 
                     <Flex bg="green.100"  key={index} border="1px" p="4" minW="200px" maxWidth="300px" direction="column" align="center" justify="space-between">
-                        <Image height="200px" src={`/static/images/services/${item.name}.jpg`} />
+                        <Image height="200px" src={`/images/services/${item.name}.jpg`} />
                         <Flex   width="100%" align="center" direction="column" justify="space-between">
                             <Text fontWeight="medium">{item.name}</Text>
                             <Text>{item.value} ETH</Text>
