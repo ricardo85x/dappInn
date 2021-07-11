@@ -1,21 +1,68 @@
 import { Box, Flex, Text, Button, IconButton } from "@chakra-ui/react"
-import { Header } from "../components/Header"
-import { MyTab } from "../components/MyTab"
-import { ServiceList } from "../components/ServiceList"
+import { Header } from "../../components/Header"
+import { MyTab } from "../../components/MyTab"
+import { ServiceList } from "../../components/ServiceList"
 import { FiChevronLeft } from "react-icons/fi";
 import { useRouter } from "next/router"
+import { useDappContext } from "../../contexts/DappContext";
+import Router from 'next/router'
+import { toast } from "react-toastify";
+import { ethers } from "ethers";
+import moment from "moment"
+
 
 
 export default function Room() {
 
+    const { accounts, dappInnContract,roomServices, rooms, currentTimeStamp } = useDappContext();
+
     const Router = useRouter()
 
-    const room = {
-        id: 5,
-        name: `Room 005`,
-        price: `0.0000005 ETH`,
-        vacant: 'Guest'
+    const { roomNumber  } = Router.query
+
+    const room_id = Number(roomNumber) - 1;
+
+    if(rooms.length < room_id){
+
+        // toast.error("Invalid Room")
+        // Router.push("/")
+
+        return <Text>Loading</Text>
+
+    
     }
+
+    const currentRoom = rooms[room_id];
+
+    if(!currentRoom?.guest){
+        return <Text>Loading</Text>
+    }
+
+    if(accounts[0].toLowerCase() !== currentRoom.guest.toLowerCase()){
+        toast.error("Ops wrong room")
+        Router.push("/")
+        return <Text>Loading</Text>
+    }
+
+
+    
+
+    if(currentTimeStamp > currentRoom.checkoutDate){
+        toast.error("Your stay period is over, pack your stuffs and leave")
+        Router.push("/")
+        return <Text>Loading</Text>
+    }
+
+    const room = {
+        id: currentRoom.id,
+        name: `Room ${String(roomNumber).padStart(3, '0')}`,
+        price: ethers.utils.formatEther(ethers.BigNumber.from(currentRoom.price)),
+        vacant: 'Guest',
+        checkOutOn: moment(currentRoom.checkoutDate).from(currentTimeStamp)
+    }
+
+   
+
 
 
     const returnToHome = () => {
@@ -32,7 +79,7 @@ export default function Room() {
         >
             <Box
                 width="100%"
-                maxWidth={1100}
+                maxWidth={1150}
                 justify="center"
                 align="center"
                 backgroundColor="red.50"
@@ -62,13 +109,13 @@ export default function Room() {
                             <Button variant="brand">Check-Out Early</Button>
                         </Flex>
 
-                        <Text textAlign="left" fontSize={["20", "25", "3xl"]} color="brand.600">You can stay in this room for another 2 days</Text>
+                        <Text textAlign="left" fontSize={["20", "25", "3xl"]} color="brand.600">You have to checkout {room.checkOutOn}</Text>
 
                         <Text textAlign="left" fontSize={["20", "25", "3xl"]}>Enjoy your stay and order some room service!</Text>
 
-                        <MyTab />
+                        <MyTab roomNumber={room.id} />
 
-                        <ServiceList />
+                        <ServiceList roomNumber={room.id} />
 
                     </Flex>
 

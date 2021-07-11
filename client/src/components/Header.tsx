@@ -1,6 +1,10 @@
 import { Flex, Box, Text, Button } from "@chakra-ui/react"
+import { useDappContext } from "../contexts/DappContext"
 
 export const Header = () => {
+
+    const { accounts, handleConnect} = useDappContext()
+
 
     return (
         <Flex
@@ -34,9 +38,13 @@ export const Header = () => {
             
 
             <Button m="2" mr="5" colorScheme="brand"
+
+                onClick={handleConnect}
             
                 variant="brand"
-            >0x..123</Button>
+            > 
+                 { accounts.length ? `0x...${accounts[0].substr(-4)}` : "Connect" }
+            </Button>
 
         </Flex>
     )

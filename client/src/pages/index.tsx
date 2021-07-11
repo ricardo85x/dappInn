@@ -1,8 +1,13 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
 import { Header } from "../components/Header"
 import { RoomList } from "../components/RoomList"
+import { useDappContext } from "../contexts/DappContext";
 
 export default function Home() {
+
+
+  const { dappError } = useDappContext();
+  
   return (
     <Box
       width="100%"
@@ -11,7 +16,7 @@ export default function Home() {
     >
       <Box
         width="100%"
-        maxWidth={1100}
+        maxWidth={1150}
         justify="center"
         align="center"
         backgroundColor="red.50"
@@ -33,9 +38,15 @@ export default function Home() {
             justify="center"
 
           >
-            <Text fontSize="4xl">Welcome to dDapp Inn</Text>
+            <Text fontWeight="medium" fontSize="4xl">Welcome to dDapp Inn</Text>
 
-            <Text fontSize="3xl" color="brand.600">Choose an empty room to rent</Text>
+            { dappError.hasError ? (
+              <Text fontSize="3xl" color="brand.600"> `{dappError.message} </Text>
+            ) : (
+              <Text fontSize="3xl" color="green.500">Choose an <b>empty</b> room to rent </Text>
+
+            ) } 
+
 
             <RoomList />
 

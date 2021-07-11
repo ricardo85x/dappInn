@@ -7,7 +7,7 @@ chai.use(chaiAsPromised)
 import { ethers, waffle } from "hardhat"
 const { deployContract } = waffle;
 
-import DappInnArtifact from "../artifacts/contracts/DappInn.sol/DappInn.json"
+import DappInnArtifact from "../src/artifacts/contracts/DappInn.sol/DappInn.json"
 import { DappInn } from "../src/types/DappInn"
 
 describe("DappInn", () => {

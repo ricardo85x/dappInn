@@ -50,35 +50,56 @@ contract DappInn {
     modifier IsVacant(uint8 _roomNumber){
         require(_roomNumber < numberOfRooms, "This room does not exists");
         // check if the room is occupied when checkoutDate is in the past.
-        if (block.timestamp > rooms[_roomNumber].checkoutDate ) {
+        if ( rooms[_roomNumber].checkoutDate > block.timestamp  ) {
             require(rooms[_roomNumber].status == RoomStatus.Vacant, "This room is occupied");
         }
         _;
     }
 
+    event setRoomPriceEvent(uint8 _roomNumber, uint _price);
 
     /// @notice set Rooms price.
     /// @dev set price to zero when you want to use defaultRoomPriceInWei.
     function setRoomPrice(uint8 _roomNumber, uint _price) public onlyOwner IsVacant(_roomNumber) {
         rooms[_roomNumber].price = _price; 
+
+        emit setRoomPriceEvent(_roomNumber, _price);
     }
+
+    event setDefaultRoomPriceEvent(uint _price);
+
 
     /// @notice set the defaut room price.
     function setDefaultRoomPrice(uint _price) public onlyOwner {
         require(_price > 0, "Money doesn't grow on trees");
         defaultRoomPriceInWei = _price; 
+
+        emit setDefaultRoomPriceEvent(_price);
     }
+
+    event setNumberOfRoomsEvent(uint8 _numberOfRooms);
 
     /// @notice set the number of rooms available to rent.
     /// @dev please verifify manualy if the room is empty before continue.
     function setNumberOfRooms(uint8 _numberOfRooms) public onlyOwner {
         numberOfRooms = _numberOfRooms;
+
+        emit setNumberOfRoomsEvent(_numberOfRooms);
     }
+
+
+    event withdrawAllEvent(uint _amount);
+
 
     /// @notice withdraw all funds.
     function withdrawAll() public onlyOwner {
-        require(address(this).balance > 0, "I'm broke, sorry...");
-        payable(msg.sender).transfer(address(this).balance);
+
+        uint _amount = address(this).balance;
+        require(_amount > 0, "I'm broke, sorry...");
+        payable(msg.sender).transfer(_amount);
+
+        emit withdrawAllEvent(_amount);
+
     }
 
     /// @return the balance in this smart contract.
@@ -86,8 +107,10 @@ contract DappInn {
         return address(this).balance;
     }
 
+    event checkInEvent(address indexed _address, uint8  _roomNumber);
+
     /// @notice check in the room.
-    function checkIn(uint8 _roomNumber, uint8 _timeToStay) public payable {
+    function checkIn(uint8 _roomNumber, uint _timeToStay) public payable {
         require(_timeToStay > 0, "You have to stay at least one period");
 
         // if rooms price is zero, set the price to be the defaultRoomPriceInWei
@@ -100,7 +123,7 @@ contract DappInn {
         require(_roomNumber < numberOfRooms, "This room does not exists");
 
         // check if the room is occupied when checkoutDate is in the past.
-        if (block.timestamp > rooms[_roomNumber].checkoutDate ) {
+        if ( rooms[_roomNumber].checkoutDate > block.timestamp ) {
             require(rooms[_roomNumber].status == RoomStatus.Vacant, "This room is occupied");
         }
 
@@ -122,6 +145,8 @@ contract DappInn {
 
         rooms[_roomNumber].tab.push(checkInService);
 
+
+        emit checkInEvent(msg.sender, _roomNumber);
         
     }
 
@@ -129,6 +154,8 @@ contract DappInn {
     function getTimeStamp() public view returns(uint) {
         return block.timestamp;
     }
+
+    event checkOutEvent(address indexed _address, uint8 _roomNumber);
 
     /// @notice checkout the user before the checkoutDate.
     /// @dev no money back!
@@ -141,15 +168,22 @@ contract DappInn {
         rooms[_roomNumber].guest = address(0);
         rooms[_roomNumber].checkoutDate = block.timestamp;
 
+        emit checkOutEvent(msg.sender, _roomNumber);
+
     }
+
+    event addRoomServiceEvent(uint8  _serviceNumber, string  _name);
 
     /// @dev add a service so guest can buy it.
     function addRoomService(string memory _name, uint _price) public onlyOwner {
         roomService[numberOfServices].name = _name;
         roomService[numberOfServices].price = _price;
         roomService[numberOfServices].enabled = true;
+        emit addRoomServiceEvent(numberOfServices, _name);
         numberOfServices++;
     }
+
+    event updateRoomServiceEvent(uint8  _serviceNumber, string  _name);
 
     /// @dev update a service.
     function updateRoomService(uint8 _serviceNumber, string memory _name, uint _price, bool _enabled) public onlyOwner {
@@ -157,7 +191,13 @@ contract DappInn {
         roomService[_serviceNumber].name = _name;
         roomService[_serviceNumber].price = _price;
         roomService[_serviceNumber].enabled = _enabled;
+
+        emit updateRoomServiceEvent(numberOfServices, _name);
+
     }
+
+    event buyRoomServiceEvent(address indexed _address, string _service);
+
 
     /// @notice buy a service to make your stay more happy.
     function buyRoomService(uint8 _roomNumber, uint8 _serviceNumber) public payable {
@@ -168,6 +208,8 @@ contract DappInn {
         require(msg.value >= roomService[_serviceNumber].price, "Not enough money");
 
         rooms[_roomNumber].tab.push(roomService[_serviceNumber]);
+
+        emit buyRoomServiceEvent(msg.sender, roomService[_serviceNumber].name);
 
     }
 

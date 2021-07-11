@@ -25,7 +25,7 @@ interface DappInnInterface extends ethers.utils.Interface {
     "addRoomService(string,uint256)": FunctionFragment;
     "balance()": FunctionFragment;
     "buyRoomService(uint8,uint8)": FunctionFragment;
-    "checkIn(uint8,uint8)": FunctionFragment;
+    "checkIn(uint8,uint256)": FunctionFragment;
     "checkOut(uint8)": FunctionFragment;
     "defaultRoomPriceInWei()": FunctionFragment;
     "getRoomTab(uint8)": FunctionFragment;
@@ -161,7 +161,27 @@ interface DappInnInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "addRoomServiceEvent(uint8,string)": EventFragment;
+    "buyRoomServiceEvent(address,string)": EventFragment;
+    "checkInEvent(address,uint8)": EventFragment;
+    "checkOutEvent(address,uint8)": EventFragment;
+    "setDefaultRoomPriceEvent(uint256)": EventFragment;
+    "setNumberOfRoomsEvent(uint8)": EventFragment;
+    "setRoomPriceEvent(uint8,uint256)": EventFragment;
+    "updateRoomServiceEvent(uint8,string)": EventFragment;
+    "withdrawAllEvent(uint256)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "addRoomServiceEvent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "buyRoomServiceEvent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "checkInEvent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "checkOutEvent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "setDefaultRoomPriceEvent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "setNumberOfRoomsEvent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "setRoomPriceEvent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "updateRoomServiceEvent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "withdrawAllEvent"): EventFragment;
 }
 
 export class DappInn extends BaseContract {
@@ -502,7 +522,67 @@ export class DappInn extends BaseContract {
     withdrawAll(overrides?: CallOverrides): Promise<void>;
   };
 
-  filters: {};
+  filters: {
+    addRoomServiceEvent(
+      _serviceNumber?: null,
+      _name?: null
+    ): TypedEventFilter<
+      [number, string],
+      { _serviceNumber: number; _name: string }
+    >;
+
+    buyRoomServiceEvent(
+      _address?: string | null,
+      _service?: null
+    ): TypedEventFilter<
+      [string, string],
+      { _address: string; _service: string }
+    >;
+
+    checkInEvent(
+      _address?: string | null,
+      _roomNumber?: null
+    ): TypedEventFilter<
+      [string, number],
+      { _address: string; _roomNumber: number }
+    >;
+
+    checkOutEvent(
+      _address?: string | null,
+      _roomNumber?: null
+    ): TypedEventFilter<
+      [string, number],
+      { _address: string; _roomNumber: number }
+    >;
+
+    setDefaultRoomPriceEvent(
+      _price?: null
+    ): TypedEventFilter<[BigNumber], { _price: BigNumber }>;
+
+    setNumberOfRoomsEvent(
+      _numberOfRooms?: null
+    ): TypedEventFilter<[number], { _numberOfRooms: number }>;
+
+    setRoomPriceEvent(
+      _roomNumber?: null,
+      _price?: null
+    ): TypedEventFilter<
+      [number, BigNumber],
+      { _roomNumber: number; _price: BigNumber }
+    >;
+
+    updateRoomServiceEvent(
+      _serviceNumber?: null,
+      _name?: null
+    ): TypedEventFilter<
+      [number, string],
+      { _serviceNumber: number; _name: string }
+    >;
+
+    withdrawAllEvent(
+      _amount?: null
+    ): TypedEventFilter<[BigNumber], { _amount: BigNumber }>;
+  };
 
   estimateGas: {
     addRoomService(
