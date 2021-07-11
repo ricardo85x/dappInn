@@ -7,7 +7,8 @@ const isDev = process.env.NODE_ENV !== "production";
 
 module.exports = withPlugins([
     [withImages, {
-      assetPrefix: isDev ? "": "/dappInn/"
+      assetPrefix: isDev ? "": "/dappInn/",
+      basePath: isDev ? "": "/dappInn"
     }],
     withSass,
     {
