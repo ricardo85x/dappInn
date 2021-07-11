@@ -1,0 +1,41 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Get files
+        uses: actions/checkout@v2
+      - name: Use cache files to setup yarn
+        uses: actions/cache@v2
+        with:
+          path: '**/**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/**/yarn.lock') }}
+      - name: Install packages hardhat
+        run: yarn
+      - name: Install packages next
+        run: yarn
+        working-directory: "./client"
+      - name: Build App
+        run: yarn build
+        working-directory: "./client"
+      - name: Export static to out dir
+        run: yarn export
+        working-directory: "./client"
+      - name: Add .nojekyll file to allow requests on _next dir on github pages
+        run: touch ./out/.nojekyll
+        working-directory: "./client"
+      - name: Deploy out dir to branch gh-pages
+        uses: JamesIves/github-pages-deploy-action@4.1.1
+        with:
+          branch: gh-pages
+          folder: client/out

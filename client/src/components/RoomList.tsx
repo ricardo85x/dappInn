@@ -1,4 +1,4 @@
-import { Flex, Box, Grid, Text, Button, Select } from "@chakra-ui/react"
+import { Flex, Box, Grid, Text, Button, Select, Image } from "@chakra-ui/react"
 
 import { useRouter } from "next/router"
 import { useDappContext } from "../contexts/DappContext"
@@ -7,6 +7,7 @@ import { ethers } from "ethers"
 import moment from "moment"
 import { useState } from "react"
 import { useEffect } from "react"
+import { toast } from "react-toastify"
 
 
 
@@ -24,7 +25,7 @@ const customEtherFormatFromWei = (value: string) => {
 
     const ether_format = ethers.utils.formatEther(value);
 
-    return  `${ether_format.split(".")[0]}.${ether_format.split(".")[1].padEnd(18,"0")}`
+    return `${ether_format.split(".")[0]}.${ether_format.split(".")[1].padEnd(18, "0")}`
 }
 
 export const RoomList = () => {
@@ -35,7 +36,7 @@ export const RoomList = () => {
     const Router = useRouter()
 
 
-    const handleEnterRoom = ( roomNumber: number) => {
+    const handleEnterRoom = (roomNumber: number) => {
         Router.push(`/room/${Number(roomNumber) + 1}`)
     }
 
@@ -44,7 +45,7 @@ export const RoomList = () => {
 
     const { accounts, rooms, dappInnContract, currentTimeStamp } = useDappContext()
 
-    const [ items, setItems] = useState<RoomProps[]>([])
+    const [items, setItems] = useState<RoomProps[]>([])
 
     const [selectedPeriod, setSelectedPeriod] = useState<number[]>([])
 
@@ -58,11 +59,11 @@ export const RoomList = () => {
                 console.log("nn", currentTimeStamp)
             }
 
-            const _selectedPeriod = selectedPeriod.length > item.id ? 
-            selectedPeriod[item.id] : 
-            5 * 60;
+            const _selectedPeriod = selectedPeriod.length > item.id ?
+                selectedPeriod[item.id] :
+                5 * 60;
 
-    
+
             return {
                 id: item.id,
                 name: `Room 00${item.id + 1}`,
@@ -77,7 +78,7 @@ export const RoomList = () => {
                 selectedPeriod: _selectedPeriod
             }
         }))
-        
+
     }, [rooms, selectedPeriod])
 
     const handleSetPeriod = (room_id: number, _period: number) => {
@@ -96,15 +97,21 @@ export const RoomList = () => {
         dappInnContract.checkIn(room_number, time_to_stay, {
             value: ethers.BigNumber.from(roomValue).mul(time_to_stay)
         })
+            .then(() => toast.info("Waiting confirmation to delivery the key"))
+            .catch(() => toast.error("There was an error while check in, Try again later"))
     }
 
 
     console.log("items", items)
 
     const colorVar = {
-        Occupied: "yellow.300",
-        Vacant: "green.300",
-        Guest: "blue.300"
+        // Occupied: "yellow.300",
+        // Vacant: "green.300",
+        // Guest: "blue.300"
+
+        Occupied: "yellow.100",
+        Vacant: "green.100",
+        Guest: "blue.100"
     }
 
     return (
@@ -115,25 +122,36 @@ export const RoomList = () => {
                     key={item.id}
                     w="250px"
                     bg={colorVar[item.vacant]}
+                    // bg="brand.500"
                     border="1px"
                     direction="column"
                     justify="space-between"
 
                 >
-                    <Flex direction="column" minH="200px" width="100%" h="100%" align="center" justify="center">
-                        <Text fontSize="2xl" fontWeight="medium">{item.name}</Text>
-                        <Text wordBreak="break-all" fontSize="15" >
-                            {
-                                item.vacant == "Vacant" ?
-                                    `${item.pricePerPeriod} ETH` :
-                                    item.vacant == "Guest" ?
-                                        "Your are the guest" :
-                                        `Vacate ${item.checkoutDateOn}`
-                            }
-                        </Text>
+                    <Flex
+                        direction="column" width="100%" align="center" justify="space-between"
+                    >
+                        <Flex
+                            direction="column" width="100%" h="100%" align="flex-start" justify="center"
+                        >
+                            <Text px="2" fontSize="2xl" fontWeight="medium">{item.name}</Text>
+                            <Text px="2" wordBreak="break-all" fontSize="15" >
+                                {
+                                    item.vacant == "Vacant" ?
+                                        `${item.pricePerPeriod} ETH` :
+                                        item.vacant == "Guest" ?
+                                            "Your are the guest" :
+                                            `Vacate ${item.checkoutDateOn}`
+                                }
+                            </Text>
+                        </Flex>
+
+                        <Image width="100%" src={`/static/images/room_${item.id}.jpg`}/>
+                        
                     </Flex>
+
                     <Flex width="100%" minH="50px"
-                        bg="gray.300"
+                        bg="white"
                         borderTop="1px"
                         direction="row"
                         justify="space-between"
@@ -143,7 +161,7 @@ export const RoomList = () => {
 
                         {
                             item.vacant === "Vacant" ?
-                                <Select  onChange={(el) => handleSetPeriod(Number(`${item.id}`), Number(el.currentTarget.value))} name="period" size="sm" maxWidth="120px">
+                                <Select ml="2" onChange={(el) => handleSetPeriod(Number(`${item.id}`), Number(el.currentTarget.value))} name="period" size="sm" maxWidth="120px">
                                     <option value={`${5 * 60}`}>5 Minutes</option>
                                     <option value={`${60 * 60}`}>One Hour</option>
                                     <option value={`${60 * 60 * 6}`}>6 Hours</option>
@@ -160,10 +178,10 @@ export const RoomList = () => {
 
 
                         {item.vacant === "Vacant" &&
-                            <Button onClick={() => handleRentRoom(item.id)} mr="2" size="sm" variant="brandGreen">Rent</Button>
+                            <Button onClick={() => handleRentRoom(item.id)} mr="2" size="sm" fontWeight="medium" variant="brandGreen">Rent</Button>
                         }
                         {item.vacant === "Guest" &&
-                            <Button onClick={() => handleEnterRoom(item.id)} mr="2" size="sm" fontWeight="normal" variant="brandBlue">Enter</Button>
+                            <Button onClick={() => handleEnterRoom(item.id)} mr="2" size="sm" fontWeight="medium" variant="brandBlue">Enter</Button>
                         }
                     </Flex>
                 </Flex>

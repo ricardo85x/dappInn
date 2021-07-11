@@ -1,4 +1,4 @@
-import { Box, Text, Table, Thead, Tbody, Th, Tr, Td, IconButton } from "@chakra-ui/react"
+import { Box, Text, Flex, Button, Table, Thead, Tbody, Th, Tr, Td, IconButton, Image } from "@chakra-ui/react"
 import { ethers } from "ethers";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { toast } from "react-toastify";
@@ -14,16 +14,16 @@ const customEtherFormatFromWei = (value: string) => {
 
     const ether_format = ethers.utils.formatEther(value);
 
-    return  `${ether_format.split(".")[0]}.${ether_format.split(".")[1].padEnd(18,"0")}`
+    return `${ether_format.split(".")[0]}.${ether_format.split(".")[1].padEnd(18, "0")}`
 }
 
-export const ServiceList = ({ roomNumber} : ServiceListProps) => {
+export const ServiceList = ({ roomNumber }: ServiceListProps) => {
 
 
     const { roomServices, dappInnContract } = useDappContext();
 
 
- 
+
 
     const services = roomServices.filter(f => f.enabled).map(s => {
         return {
@@ -41,43 +41,47 @@ export const ServiceList = ({ roomNumber} : ServiceListProps) => {
 
 
 
-        if(wantedService && wantedService.enabled){
+        if (wantedService && wantedService.enabled) {
             dappInnContract.buyRoomService(roomNumber, service_id, {
                 value: wantedService.price
             })
-            .then(() => {
-                toast.info('Waiting confirmation to delivery the service')
-            }).catch(() => {
-                toast.error('Sorry, something nasty happened')
-            })
+                .then(() => {
+                    toast.info('Waiting confirmation to delivery the service')
+                }).catch(() => {
+                    toast.error('Sorry, something nasty happened')
+                })
         } else {
             toast.error('Sorry, this service is unavailable')
         }
 
-        
+
     }
 
     return (
-        <Box border="1px" p={["2","10"]}  backgroundColor="green.50" align="start" maxWidth={1100} width="100%">
-            <Text fontWeight="semibold" textColor="gray.600" fontSize={["25","4xl"]}>Available services to buy</Text>
-            <Table colorScheme="green" textColor="gray.600" >
-                <Thead>
-                    <Tr>
-                        <Th p={["2","4"]} textColor="green.200" fontSize={["18","2xl"]}>Service</Th>
-                        <Th p={["2","4"]} textColor="green.200" fontSize={["18","2xl"]}>Value</Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {services.map((item, index: number) => (
-                        <Tr  key={index}>
-                            <Td p={["2","4"]}><IconButton onClick={() => handleBuyService(item.id)}  size="sm" colorScheme="green" variant="outline" color="green.500" aria-label="Take My Money!" icon={<GiTakeMyMoney />} /> {item.name}</Td>
-                            <Td p={["2","4"]}>{item.value} ETH</Td>
-                        </Tr>
-                    ))}
+        <Box border="1px" p={["2", "10"]} backgroundColor="green.50" align="start" maxWidth={1100} width="100%">
+            <Text fontWeight="semibold" textColor="gray.600" fontSize={["25", "4xl"]}>Available services to buy</Text>
+            <Flex width="100%" direction="row" flexWrap="wrap" justify="space-between" align="center" gridGap="5" >
 
-                </Tbody>
+           
 
-            </Table>
+                {services.map((item, index: number) => (
+
+                    <Flex bg="green.100"  key={index} border="1px" p="4" minW="200px" maxWidth="300px" direction="column" align="center" justify="space-between">
+                        <Image height="200px" src={`/static/images/services/${item.name}.jpg`} />
+                        <Flex   width="100%" align="center" direction="column" justify="space-between">
+                            <Text fontWeight="medium">{item.name}</Text>
+                            <Text>{item.value} ETH</Text>
+                            <Button onClick={() => handleBuyService(item.id)} variant="brandGreen" width="100%">Buy</Button>
+                        </Flex>
+                    </Flex>
+
+                ))}
+
+
+
+            </Flex>
+
+           
         </Box>
 
     )
