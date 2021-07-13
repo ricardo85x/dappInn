@@ -5,7 +5,6 @@ import { useDappContext } from "../contexts/DappContext";
 
 export default function Home() {
 
-
   const { dappError } = useDappContext();
   
   return (
@@ -19,7 +18,7 @@ export default function Home() {
         maxWidth={1150}
         justify="center"
         align="center"
-        backgroundColor="red.50"
+        backgroundColor="brand.900"
         border="1px"
       >
 
@@ -36,17 +35,13 @@ export default function Home() {
 
             align="flex-start"
             justify="center"
-
           >
             <Text fontWeight="medium" fontSize="4xl">Welcome to dDapp Inn</Text>
-
             { dappError.hasError ? (
-              <Text fontSize="3xl" color="brand.600"> `{dappError.message} </Text>
+              <Text fontSize="3xl" color="brand.600">`{dappError.message}</Text>
             ) : (
-              <Text fontSize="3xl" color="green.500">Choose an <b>empty</b> room to rent </Text>
-
+              <Text fontSize="3xl" color="brand.300">Choose an <b>empty</b> room to rent</Text>
             ) } 
-
 
             <RoomList />
 

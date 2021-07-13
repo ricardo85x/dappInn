@@ -5,7 +5,6 @@ import { ServiceList } from "../../components/ServiceList"
 import { FiChevronLeft } from "react-icons/fi";
 import { useRouter } from "next/router"
 import { useDappContext } from "../../contexts/DappContext";
-import Router from 'next/router'
 import { toast } from "react-toastify";
 import { ethers } from "ethers";
 import moment from "moment"
@@ -14,7 +13,7 @@ import moment from "moment"
 
 export default function Room() {
 
-    const { accounts, dappInnContract,roomServices, rooms, currentTimeStamp } = useDappContext();
+    const { accounts, dappInnContract,rooms, currentTimeStamp } = useDappContext();
 
     const Router = useRouter()
 
@@ -23,13 +22,9 @@ export default function Room() {
     const room_id = Number(roomNumber) - 1;
 
     if(rooms.length < room_id){
-
-        // toast.error("Invalid Room")
-        // Router.push("/")
-
+        toast.error("Invalid Room")
+        Router.push("/")
         return <Text>Loading</Text>
-
-    
     }
 
     const currentRoom = rooms[room_id];
@@ -44,9 +39,6 @@ export default function Room() {
         return <Text>Loading</Text>
     }
 
-
-    
-
     if(currentTimeStamp > currentRoom.checkoutDate){
         toast.error("Your stay period is over, pack your stuffs and leave")
         Router.push("/")
@@ -58,18 +50,16 @@ export default function Room() {
         name: `Room ${String(roomNumber).padStart(3, '0')}`,
         price: ethers.utils.formatEther(ethers.BigNumber.from(currentRoom.price)),
         vacant: 'Guest',
-        checkOutOn: moment(currentRoom.checkoutDate).from(currentTimeStamp)
+        checkOutOn: moment(currentRoom.checkoutDate).from(currentTimeStamp) + ' ' +
+            'on ' + moment(currentRoom.checkoutDate).format("MMM Do YYYY [at] H:mm")
     }
 
-   
 
-
-
-    const returnToHome = () => {
-
-        Router.push("/")
+    const handleCheckOut = () => {
+        dappInnContract.checkOut(currentRoom.id)
+            .then(() => toast.info('Waiting confirmation, start packing your stufs'))
+            .catch(() => toast.error('Something went wrong. Please try again'))
     }
-
 
     return (
         <Box
@@ -82,11 +72,11 @@ export default function Room() {
                 maxWidth={1150}
                 justify="center"
                 align="center"
-                backgroundColor="red.50"
+                backgroundColor="brand.900"
+
                 border="1px"
             >
                 <Header />
-
 
                 <Box align="center" width="100%">
                     <Flex
@@ -104,12 +94,12 @@ export default function Room() {
 
                     >
                         <Flex width="100%" gridGap="2" justify={["space-between", "start"]} align="center" direction="row" flexWrap="wrap">
-                            <IconButton size="sm" onClick={returnToHome} aria-label="Return to Home" icon={<FiChevronLeft />} />
+                            <IconButton colorScheme="whiteAlpha" size="sm" onClick={() => Router.push("/")} aria-label="Return to Home" icon={<FiChevronLeft />} />
                             <Text fontSize={["25", "2xl", "4xl"]}>{room.name} </Text>
-                            <Button variant="brand">Check-Out Early</Button>
+                            <Button onClick={handleCheckOut} colorScheme="whiteAlpha" >Check-Out Early</Button>
                         </Flex>
 
-                        <Text textAlign="left" fontSize={["20", "25", "3xl"]} color="brand.600">You have to checkout {room.checkOutOn}</Text>
+                        <Text textAlign="left" fontSize={["20", "25", "3xl"]} color="brand.300">You have to checkout {room.checkOutOn}  </Text>
 
                         <Text textAlign="left" fontSize={["20", "25", "3xl"]}>Enjoy your stay and order some room service!</Text>
 
@@ -121,13 +111,7 @@ export default function Room() {
 
                 </Box>
 
-
-
-
-
-
             </Box>
-
         </Box>
     )
 }

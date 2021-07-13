@@ -1,35 +1,12 @@
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { DeployFunction } from 'hardhat-deploy/types';
-
-
 import { ethers } from 'hardhat';
 import { BigNumber } from 'ethers';
 
-import ethernal from "hardhat-ethernal";
-
 import { DappInn as DappInnProps } from "../src/types/DappInn"
+import { address  } from "../client/src/hardhat-deploy/ropsten/DappInn.json"
 
+async function main() {
 
-const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-
-  const { deployments, getNamedAccounts } = hre;
-  const { deploy } = deployments;
-
-  const { deployer } = await getNamedAccounts();
-
-  const dappInn = await deploy('DappInn', {
-    from: deployer,
-    args: [],
-    log: true,
-  });
-
-  const dappInnContract = await ethers.getContractAt("DappInn", dappInn.address) as DappInnProps;
-
-  await hre.ethernal.push({
-    name: 'DappInn',
-    address: dappInn.address
-  });
-
+  const dappInnContract = await ethers.getContractAt("DappInn", address) as DappInnProps;
 
   // custo default price
 
@@ -97,6 +74,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   );
 
 
-};
-export default func;
-func.tags = ['DappInn'];
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

@@ -1,8 +1,8 @@
 import { extendTheme } from "@chakra-ui/react"
 
 const customButtonVariant = {
-    color: "black",
-    bg: "brand.500",
+    color: "gray.100",
+    bg: "brand.400",
     borderRadius: 0,
     border:"1px",
     borderColor:"black",
@@ -15,9 +15,20 @@ export const theme = extendTheme({
 
     colors: {
         brand: {
-            500: "#FFA1A1",
-            550: "#FF7C7C",
-            600: "#E04040"
+            50: "#bdd6ff",
+            100: "#75aaff",
+            200: "#4a8cf7",
+            300: "#4685eb",
+            400: "#4079d6",
+            500: "#396bbd",
+            550: "#3462ad",
+            600: "#2e5799",
+            700: "#224070",
+            800: "#162a4a",
+            900: "#0e1a2e"
+        },
+        brand_secondary: {
+
         },
         green: {
             300: "#64EC72"
@@ -37,9 +48,9 @@ export const theme = extendTheme({
                 brand: (props) => customButtonVariant,
                 brandGreen: (props) => ({
                     ...customButtonVariant,
-                    bg: "green.300",
+                    bg: "green.600",
                     _hover: {
-                        bg: "green.400"
+                        bg: "green.500"
                     }
                 }),
                 brandBlue: (props) => ({
@@ -60,7 +71,7 @@ export const theme = extendTheme({
     styles: {
         global: {
             body: {
-                color: 'gray.900',
+                color: 'gray.100',
                 bg: 'gray.50'
             }
         }

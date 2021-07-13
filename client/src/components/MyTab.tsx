@@ -23,11 +23,9 @@ const customEtherFormatFromWei = (value: string) => {
 
 export const MyTab = ({ roomNumber }: MyTabProps) => {
 
-
     const { rooms } = useDappContext();
 
     const room = rooms[roomNumber];
-
 
     let tab: TabProps[] = [];
 
@@ -53,12 +51,8 @@ export const MyTab = ({ roomNumber }: MyTabProps) => {
             })
         }
 
-
-
-
     })
 
-    /// @dev sorry again \o/
     if (tab.length) {
         tab = [...tab, {
             name: "TOTAL",
@@ -81,19 +75,22 @@ export const MyTab = ({ roomNumber }: MyTabProps) => {
 
 
     return (
-        <Box border="1px" p={["2", "10"]} backgroundColor="orange.50" align="start" maxWidth={1100} width="100%">
-            <Text fontWeight="semibold" textColor="gray.600" fontSize={["25", "4xl"]}>My Tab</Text>
-            <Table colorScheme="orange" textColor="gray.600" >
+        <Box border="1px" borderRadius="10" p={["2", "10"]} backgroundColor="brand.800" align="start" maxWidth={1100} width="100%">
+            <Text pb="2" fontWeight="semibold" textColor="brand.400" fontSize={["25", "4xl"]}>My Tab</Text>
+            <Table  textColor="gray.100" >
                 <Thead >
                     <Tr >
-                        <Th p={["2", "4"]} textColor="orange.200" fontSize={["18", "2xl"]}>Service</Th>
-                        <Th p={["2", "4"]} textColor="orange.200" fontSize={["18", "2xl"]}>Value</Th>
+                        <Th p={["2", "4"]} textColor="gray.200" fontSize={["18", "2xl"]}>Service</Th>
+                        <Th p={["2", "4"]} textColor="gray.200" fontSize={["18", "2xl"]}>Value</Th>
                     </Tr>
                 </Thead>
                 <Tbody>
                     {tab.map((item, index: number) => (
-                        <Tr key={index}>
-                            <Td p={["2", "4"]}> {(index < tab.length - 1) && `${item.amount}x`} {item.name}</Td>
+                        <Tr  
+                            key={index} 
+                            fontWeight={tab.length == index + 1 ? "bold" : "normal"} 
+                        >
+                            <Td  p={["2", "4"]}> {(index < tab.length - 1) && `${item.amount}x`} {item.name}</Td>
                             <Td p={["2", "4"]}>{item.value} ETH</Td>
                         </Tr>
                     ))}

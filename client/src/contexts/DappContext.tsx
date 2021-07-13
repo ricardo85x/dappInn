@@ -35,24 +35,17 @@ interface RoomService {
     enabled: boolean;
 }
 
-interface ServiceProps {
-    name: string;
-    price: string;
-    enabled: boolean;
-}
-
 type ErrorProps = {
     hasError: boolean;
     message: string;
 }
 
-
 interface DappContextProps {
     accounts: string[]
-    setAccounts: (_accounts: string[]) => void;
+    // setAccounts: (_accounts: string[]) => void;
 
-    provider: Web3Provider | undefined
-    setProvider: (_provider: Web3Provider) => void;
+    // provider: Web3Provider | undefined
+    // setProvider: (_provider: Web3Provider) => void;
 
     handleConnect: () => void;
 
@@ -161,8 +154,6 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
 
                     loadRoomServices(_dappInnContract)
 
-
-                    
                 } else {
                     // TODO disconnect change account
                 }
@@ -198,7 +189,7 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
 
             if (currentBlock > fromBlock) {
                 loadRooms(_dappInnContract, _account)
-                toast.info("You Check out, pack your stuffs and leave")
+                toast.info("It was a pleasure to have you, now pack your stuffs and leave")
             }
         })
 
@@ -214,14 +205,9 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
             }
         })
 
-
-        // loadRoomServices
-
     }
 
     const loadRoomServices = async (_dappInnContract: DappInnProps) => {
-
-        // roomService
 
         let _roomServices : RoomService[] = [];
 
@@ -243,18 +229,13 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
 
     const loadRooms = async (_dappInnContract: DappInnProps, _account: string) => {
 
-    
         let _rooms: Room[] = []
 
         const numberOfRooms = await _dappInnContract.numberOfRooms();
-
         const roomDefaultValue = await _dappInnContract.defaultRoomPriceInWei()
-
         const currentTimeStamp = (await _dappInnContract.getTimeStamp()).toNumber() * 1000;
 
-
         setCurrentTimeStamp(new Date(currentTimeStamp))
-
 
         for (let i = 0; i < numberOfRooms; i++) {
             const _room = await _dappInnContract.rooms(i);
@@ -300,13 +281,13 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
     }
 
     useEffect(() => {
-
         checkPreviousConnected()
     }, [])
 
     const value = {
-        accounts, setAccounts,
-        provider, setProvider,
+        accounts, 
+        // setAccounts,
+        // provider, setProvider,
         handleConnect,
         dappInnContract,
         rooms,

@@ -1,10 +1,12 @@
-import { Flex, Box, Text, Button } from "@chakra-ui/react"
+import { Flex, Text, Button } from "@chakra-ui/react"
+import { useRouter } from "next/router";
 import { useDappContext } from "../contexts/DappContext"
 
 export const Header = () => {
 
-    const { accounts, handleConnect} = useDappContext()
+    const { accounts, handleConnect } = useDappContext()
 
+    const Router = useRouter();
 
     return (
         <Flex
@@ -13,37 +15,36 @@ export const Header = () => {
             align="center"
             justify="space-between"
         >
-         
-           <Text 
+
+            <Text
                 py="2.5"
                 px="5"
-                backgroundColor="brand.500"
-                border="1px" 
+                backgroundColor="brand.800"
+                border="1px"
                 borderLeft="none"
                 borderTop="none"
                 borderBottomRightRadius="30"
-                borderColor="black"
+                borderColor="gray.100"
                 fontSize="30"
                 fontWeight="medium"
-                textColor="black"
-                color="black"
-                _hover={{ bg: "brand.600"}}
+                textColor="gray.100"
+                color="gray.100"
+                _hover={{ bg: "brand.600" }}
                 cursor="pointer"
                 title="Home"
-                
-                > 
-                    dApp Inn
+
+                onClick={() => Router.push("/")}
+
+            >
+                dApp Inn
             </Text>
-            
-            
 
-            <Button m="2" mr="5" colorScheme="brand"
 
+            <Button m="2" mr="5"
                 onClick={handleConnect}
-            
-                variant="brand"
-            > 
-                 { accounts.length ? `0x...${accounts[0].substr(-4)}` : "Connect" }
+                colorScheme="whiteAlpha"
+            >
+                {accounts.length ? `0x...${accounts[0].substr(-4)}` : "Connect"}
             </Button>
 
         </Flex>

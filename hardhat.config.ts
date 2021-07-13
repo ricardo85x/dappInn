@@ -37,7 +37,10 @@ const config: HardhatUserConfig = {
       saveDeployments: true,
       accounts: {
         mnemonic: process.env.MNEMONIC
-      }
+      },
+      gas: 4400000,
+      gasPrice: 8000000000
+      
     }
     
   }
