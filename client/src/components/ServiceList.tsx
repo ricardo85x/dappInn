@@ -1,7 +1,7 @@
 import { Box, Text, Flex, Button, Image } from "@chakra-ui/react"
 import { ethers } from "ethers";
-import { toast } from "react-toastify";
 import { useDappContext } from "../contexts/DappContext";
+import { notify } from "../services/notify";
 
 interface ServiceListProps {
     roomNumber: number;
@@ -30,12 +30,12 @@ export const ServiceList = ({ roomNumber }: ServiceListProps) => {
                 value: wantedService.price
             })
                 .then(() => {
-                    toast.info('Waiting confirmation to delivery the service')
+                    notify('Waiting confirmation to delivery the service',"info")
                 }).catch(() => {
-                    toast.error('Sorry, something nasty happened')
+                    notify('Sorry, something nasty happened',"error")
                 })
         } else {
-            toast.error('Sorry, this service is unavailable')
+            notify('Sorry, this service is unavailable',"error")
         }
     }
 

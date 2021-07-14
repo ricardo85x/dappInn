@@ -1,5 +1,4 @@
 import { ReactNode, useState, createContext, useContext, useEffect } from "react";
-import { toast } from 'react-toastify';
 
 import { ethers } from "ethers"
 import { ExternalProvider, Web3Provider } from "@ethersproject/providers/lib"
@@ -7,6 +6,9 @@ import { ExternalProvider, Web3Provider } from "@ethersproject/providers/lib"
 import DappInnGanache from "../hardhat-deploy/ganache/DappInn.json"
 import DappInnRopsten from "../hardhat-deploy/ropsten/DappInn.json"
 import { DappInn as DappInnProps } from "../../../src/types/DappInn"
+import { notify } from "../services/notify";
+
+
 
 declare global {
     interface Window {
@@ -72,6 +74,7 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
     const [roomServices, setRoomServices] = useState<RoomService[]>([])
     const [dappError, setDappError] = useState<ErrorProps>({ hasError: false, message: "" })
     const [currentTimeStamp, setCurrentTimeStamp] = useState<Date>(new Date())
+    const [firstRun, setFirstRun] = useState(true)
 
     const validNetworks = {
         "1337": "Ganache",
@@ -120,6 +123,13 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
 
                     const _provider = new ethers.providers.Web3Provider(window.ethereum)
 
+                    if (firstRun) {
+                        listenAccountChange()
+                        listenChainChange()
+                        setFirstRun(true)
+                    }
+
+
                     const blockNumber = await _provider.getBlockNumber()
 
                     const signer = _provider.getSigner();
@@ -155,7 +165,7 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
                     loadRoomServices(_dappInnContract)
 
                 } else {
-                    // TODO disconnect change account
+                    console.log("no provider?")
                 }
 
             } catch (e) {
@@ -167,6 +177,48 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
 
     }
 
+    const listenAccountChange = () => {
+
+        try {
+            if (window.ethereum) {
+                (window.ethereum as any).on('accountsChanged', (_currentAccounts: string[]) => {
+                    resetConnection()
+                })
+            }
+        } catch (error) {
+            console.log("Error, not metamask?", error)
+        }
+    }
+
+    const listenChainChange = () => { 
+        try {
+            if (window.ethereum) {
+
+                (window.ethereum as any).on('chainChanged', (_chainID) => {
+                    resetConnection()
+                })
+            }
+        } catch (error) {
+            console.log("Error, not metamask?", error)
+        }
+
+    }
+
+    const resetConnection = () => {
+
+        setAccounts([])
+        setProvider(undefined)
+        setDappInnContract(undefined)
+        setRooms([])
+        setRoomServices([])
+        setDappError({ hasError: false, message: "" })
+        setCurrentTimeStamp(new Date())
+
+        handleConnect()
+
+    }
+
+
     const dappInListeners = (_dappInnContract: DappInnProps, _account: string, fromBlock: number) => {
 
         const checkInEventFromUser = _dappInnContract.filters.checkInEvent(_account);
@@ -177,7 +229,7 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
 
             if (currentBlock > fromBlock) {
                 loadRooms(_dappInnContract, _account)
-                toast.info("Check In confirmed")
+                notify("Check In confirmed","info")
             }
         })
 
@@ -189,7 +241,7 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
 
             if (currentBlock > fromBlock) {
                 loadRooms(_dappInnContract, _account)
-                toast.info("It was a pleasure to have you, now pack your stuffs and leave")
+                notify("It was a pleasure to have you, now pack your stuffs and leave","info")
             }
         })
 
@@ -201,7 +253,7 @@ export const DappContextProvider = ({ children }: DappContextProviderProps) => {
 
             if (currentBlock > fromBlock) {
                 loadRooms(_dappInnContract, _account)
-                toast.info("Enjoy your service !")
+                notify("Enjoy your service !","info")
             }
         })
 

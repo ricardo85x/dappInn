@@ -7,7 +7,7 @@ import { ethers } from "ethers"
 import moment from "moment"
 import { useState } from "react"
 import { useEffect } from "react"
-import { toast } from "react-toastify"
+import { notify } from "../services/notify"
 
 interface RoomProps {
     id: number
@@ -88,8 +88,8 @@ export const RoomList = () => {
         dappInnContract.checkIn(room_number, time_to_stay, {
             value: ethers.BigNumber.from(roomPrice).mul(time_to_stay)
         })
-            .then(() => toast.info("Waiting confirmation to delivery the key"))
-            .catch(() => toast.error("There was an error while check in, Try again later"))
+            .then(() => notify("Waiting confirmation to delivery the key","info"))
+            .catch(() => notify("There was an error while check in, Try again later","error"))
     }
 
     // update this values to change header color
