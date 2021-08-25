@@ -114,7 +114,7 @@ export const RoomList = () => {
         { name: "5 Days", value: 60 * 60 * 24 * 5 },
         { name: "One Week", value: 60 * 60 * 24 * 7 },
         { name: "Two Weeks", value: 60 * 60 * 24 * 7 * 2 },
-        { name: "One Mount", value: 60 * 60 * 24 * 30 },
+        { name: "One Month", value: 60 * 60 * 24 * 30 },
     ]
 
     return (

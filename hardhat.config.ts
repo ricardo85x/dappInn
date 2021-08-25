@@ -14,7 +14,6 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: 0
   }, 
-
   paths: {
     artifacts: "src/artifacts",
     deployments: "client/src/hardhat-deploy"
