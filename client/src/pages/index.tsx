@@ -36,7 +36,7 @@ export default function Home() {
             align="flex-start"
             justify="center"
           >
-            <Text fontWeight="medium" fontSize="4xl">Welcome to dDapp Inn</Text>
+            <Text fontWeight="medium" fontSize="4xl">Welcome to dApp Inn</Text>
             { dappError.hasError ? (
               <Text fontSize="3xl" color="red.500">{dappError.message}</Text>
             ) : (
