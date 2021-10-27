@@ -19,6 +19,8 @@ export default function Home() {
         justify="center"
         align="center"
         backgroundColor="brand.900"
+        bgGradient="linear(to-t, brand.700, brand.900)"
+
         border="1px"
       >
 

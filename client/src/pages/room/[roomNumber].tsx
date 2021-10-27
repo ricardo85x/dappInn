@@ -79,7 +79,8 @@ export default function Room() {
                 maxWidth={1150}
                 justify="center"
                 align="center"
-                backgroundColor="brand.900"
+                bgGradient="linear(to-t, brand.700, brand.900)"
+
 
                 border="1px"
             >

@@ -11,7 +11,7 @@ export const Header = () => {
     return (
         <Flex
             w="100%"
-            backgroundColor="brand.550"
+            bgGradient="linear(to-br, brand.550, brand.700)"
             align="center"
             justify="space-between"
         >
@@ -19,7 +19,7 @@ export const Header = () => {
             <Text
                 py="2.5"
                 px="5"
-                backgroundColor="brand.800"
+                bgGradient="linear(to-b, brand.800, brand.900)"
                 border="1px"
                 borderLeft="none"
                 borderTop="none"
@@ -29,7 +29,7 @@ export const Header = () => {
                 fontWeight="medium"
                 textColor="gray.100"
                 color="gray.100"
-                _hover={{ bg: "brand.600" }}
+                _hover={{ bgGradient: "linear(to-br, brand.500, brand.700)" }}
                 cursor="pointer"
                 title="Home"
 
